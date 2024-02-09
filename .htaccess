@@ -1,0 +1,5 @@
+# включення модуля перетворення запиту
+RewriteEngine on
+# будь-які запити(.*) перетворюємо у access_manager.php
+RewriteRule .*  access_manager.php [QSA]
+# QSA - збереження url параметрів, тобто все що після ? не відрізається
