@@ -1,4 +1,6 @@
 <?php
+require_once 'vendor/autoload.php';
+
 $uri = $_SERVER['REQUEST_URI'] ;
 $pos = strpos( $uri, '?' ) ;
 if( $pos > 0 ) {
@@ -55,15 +57,21 @@ if ( isset( $routes[ $uri ]) ){
 }
 else
 {
-    $uri_name = ucfirst($uri); //перша літера в Upercase
+    $uri_name = ucfirst(str_replace("/", "", $uri)); //перша літера в Upercase
     $controler_name = "{$uri_name}Controller";
     $controler_path = "./controllers/{$controler_name}.php";
+    
+
     if( is_readable( $controler_path ) ) {
-        include $controler_path;
-        $controler_object = new $controler_name();
+        include_once "./ioc/ServiceModule.php";
+        $service_module = new ServiceModule();     
+           
+        $controler_object = $service_module->getService($controler_name);
+       
         $controler_object->serve();
         exit;
     }
+    
 }
 
 http_response_code( 404 ) ;

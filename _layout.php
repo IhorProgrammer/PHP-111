@@ -17,11 +17,18 @@
             <div class="nav-wrapper container">
                     <a href="/" class="brand-logo"><img src="img/php.png" alt=""></a>
                     <ul id="nav-mobile" class="right hide-on-med-and-down">
-                        <?php foreach( [ 'basics' => 'Основи', 'layout' => 'Шаблонізація', 'api' => 'API', 'reg' => 'Реєстрація', 'regexp' => "Регулярні вирази"] as $href => $name ) : ?>
+                        <?php foreach( [ 'basics' => 'Основи', 'layout' => 'Шаблонізація', 'api' => 'API', 'regexp' => "Регулярні вирази"] as $href => $name ) : ?>
                         <li <?= $uri==$href ? 'class="active"' : '' ?> ><a href="<?= $href ?>"><?= $name ?></a></li>
                         <?php endforeach ?>
+                        <li data-auth="avatar" class="row">
+                            <a href="reg" class="col s6">Реєстрація</a>
+                            <a class="modal-trigger col s6" href="#auth_modal">Авторизація</a>
+                        </li>
                     </ul>
             </div>
+            <ul id="user-dropdown-menu" class="dropdown-content">
+                <li><a data-auth="exit">Exit</a></li>
+            </ul>
         </nav>
     </header>
     <div class="container">
@@ -52,21 +59,32 @@
     </footer>
 		
     <!-- Modal Trigger -->
-    <!-- <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a> -->
+    <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a>
 
     <!-- Modal Structure -->
-    <div id="modal1" class="modal">
-        <div class="modal-content">
-            <h4>Modal Header</h4>
-            <p>A bunch of text</p>
-        </div>
-        <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-        </div>
+    <div id="auth_modal" class="modal">
+        <form id="auth-form" class="col s12">
+            <div class="modal-content">
+                <h4>Введіть e-mail та пароль для входу</h4>
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">login</i>
+                    <input id="user-input-login" type="text" class="validate" name="login" autocomplete="username">
+                    <label for="user-input-login">Login</label>
+                </div>
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">lock</i>
+                    <input id="user-input-password" type="password" class="validate" name="password" autocomplete="current-password">
+                    <label for="user-input-password">Password</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close btn-flat grey">Закрити</button>
+                <button type="submit" class="modal-close btn-flat deep-purple darken-1" style="margin-left:15px" id="auth-button">Вхід</button>
+            </div>
+        </form>
     </div>	
 </body>
 <!-- Compiled and minified JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
 <script src="js/site.js"></script>
 </html>

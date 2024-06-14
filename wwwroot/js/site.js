@@ -1,7 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
     const signupButton = document.getElementById("signup-button");
     if( signupButton ) signupButton.addEventListener('click', SignupButtonClick)
+    var elems = document.querySelectorAll('.modal');
+    var instances = M.Modal.init(elems);
+    const authForm = document.getElementById("auth-form");
+    if( authForm ) authForm.addEventListener("submit", AuthFormSubmit)
+    checkAuth();
+
+
 })
+
+function AuthFormSubmit(e) {
+    e.preventDefault();
+
+    const authForm = e.target;
+    if( ! authForm ) throw "AuthForm form not found";
+            
+    // Формуємо дані
+    const formData = new FormData(authForm);
+    //Валідація
+
+    // Формуємо запит
+    fetch("/auth", { method: 'POST', body: formData })
+    .then(r => r.json())
+    .then( j => {
+        if( j.meta && j.meta.status === "200" ){ 
+            localStorage.setItem("auth-token", j.data );
+            window.location.reload();
+        } else {
+            console.error(j);
+        }
+    });
+}
 
 function SignupButtonClick(e) {
     const singupForm = e.target.closest('form');
@@ -28,10 +58,10 @@ function SignupButtonClick(e) {
     if( avatar.files.length > 0) formData.append("avatar", avatar.files[0]);
 
     // Формуємо запит
-    fetch("/auth", { method: 'POST', body: formData})
+    fetch("/registration", { method: 'POST', body: formData})
     .then(r => r.json())
     .then( j => {
-        if( j.status == 1 ){ 
+        if( j.meta && j.meta.status === "200" ){ 
             alert("Реєстрація успішна")
             window.location("/")
         } else {
@@ -40,3 +70,33 @@ function SignupButtonClick(e) {
     });
 }
 
+
+function checkAuth() {
+    const authToken = localStorage.getItem("auth-token");
+    if ( authToken ) {
+        fetch(
+            `/auth?token=${authToken}`,
+            {    method: 'GET'    }
+        )
+            .then( r => r.json() )
+            .then( j => {
+                if( j.meta && j.meta.status === "200" ) { 
+                    return document.querySelector('[data-auth="avatar"]').innerHTML = `
+                        <img title="${j.data.login}" data-user-email="${j.data.email}" data-user-login="${j.data.login}" data-target='user-dropdown-menu' class="nav-avatar dropdown-trigger"  src="avatar/${!j.data.avatar?"no_image.png":j.data.avatar}" />
+                    `
+                }
+                return null
+            }).then ( obj => {
+                if( obj == null ) return;
+                // var elem = document.getElementById('user-dropdown-menu');
+                // M.Dropdown.init(elem);
+                var elems = document.querySelectorAll('.dropdown-trigger');
+                var instances = M.Dropdown.init(elems);
+                exitButton = document.querySelector('[data-auth="exit"]');
+                exitButton.addEventListener("click", () => { 
+                    localStorage.removeItem("auth-token"); 
+                    window.location.reload();
+                })
+            }) ;
+    }
+}
